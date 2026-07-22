@@ -27,12 +27,15 @@ header.app-bar{
   color:#fff;
   padding:14px 20px;
   display:flex;
-  align-items:baseline;
-  gap:10px;
-  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
 }
-header.app-bar h1{font-size:1.05rem;font-weight:700;letter-spacing:.3px}
-header.app-bar span{font-size:.8rem;opacity:.75}
+header.app-bar h1{
+  font-size:1.15rem;
+  font-weight:700;
+  letter-spacing:.35em;
+  text-align:center;
+}
 
 /* =========================================================
    LAYOUT UTAMA (form kiri, preview kanan)
@@ -45,8 +48,19 @@ header.app-bar span{font-size:.8rem;opacity:.75}
   max-width:1280px;
   margin:0 auto;
 }
+
+/* Tablet ke bawah: form di atas, preview di bawah */
 @media(max-width:900px){
-  .layout{grid-template-columns:1fr}
+  .layout{grid-template-columns:1fr;gap:14px;padding:14px}
+}
+
+/* HP kecil: padding lebih rapat, panel lebih ringkas */
+@media(max-width:600px){
+  .layout{padding:10px;gap:12px}
+  .panel{padding:14px}
+  fieldset{margin-bottom:14px}
+  .actions{flex-direction:column}
+  .btn-primary,.btn-secondary{flex:none;width:100%}
 }
 
 /* =========================================================
@@ -163,7 +177,12 @@ button{
    ========================================================= */
 .preview-wrap{display:flex;flex-direction:column;gap:12px}
 .preview-hint{font-size:.78rem;color:#667}
-.paper-holder{overflow-x:auto;padding-bottom:6px}
+.paper-holder{
+  overflow-x:auto;
+  padding-bottom:6px;
+  display:flex;
+  justify-content:center;
+}
 
 /* =========================================================
    NOTA / STRUK — elemen yang di-print / disimpan sebagai PNG
