@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generator Nota</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --ink:#1d3557;          /* biru tinta bolpoin klasik nota */
+    --ink-soft:#40557d;
+    --paper:#fbfaf7;
+    --bg:#eef0f3;
+    --line:#d7dbe2;
+    --accent:#b02a2a;       /* merah stempel */
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:#22293a;line-height:1.5;
+  }
+  header.app-bar{
+    background:var(--ink);color:#fff;padding:14px 20px;
+    display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  }
+  header.app-bar h1{font-size:1.05rem;font-weight:700;letter-spacing:.3px}
+  header.app-bar span{font-size:.8rem;opacity:.75}
+  .layout{
+    display:grid;grid-template-columns:minmax(320px,430px) 1fr;
+    gap:20px;padding:20px;max-width:1280px;margin:0 auto;
+  }
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+  /* ===== PANEL FORM ===== */
+  .panel{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;align-self:start;
+  }
+  fieldset{border:none;margin-bottom:18px}
+  legend{
+    font-size:.72rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.12em;color:var(--ink-soft);margin-bottom:8px;
+  }
+  label{display:block;font-size:.8rem;font-weight:600;margin:8px 0 3px}
+  input,textarea{
+    width:100%;padding:8px 10px;font-size:.9rem;font-family:inherit;
+    border:1px solid var(--line);border-radius:6px;background:#fdfdfd;
+  }
+  input:focus,textarea:focus{outline:2px solid var(--ink-soft);outline-offset:0;border-color:transparent}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  /* tabel barang di form */
+  table.items{width:100%;border-collapse:collapse;margin-top:6px}
+  table.items th{
+    font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--ink-soft);text-align:left;padding:4px 4px;
+  }
+  table.items td{padding:3px 3px;vertical-align:middle}
+  table.items input{padding:7px 8px;font-size:.85rem}
+  td.c-qty{width:64px}
+  td.c-harga{width:110px}
+  td.c-del{width:34px;text-align:center}
+  button{
+    font-family:inherit;cursor:pointer;border:none;border-radius:6px;
+    font-size:.85rem;font-weight:600;
+  }
+  .btn-del{
+    background:transparent;color:#a33;font-size:1rem;width:28px;height:28px;
+    border-radius:50%;line-height:1;
+  }
+  .btn-del:hover{background:#fbe9e9}
+  .btn-add{
+    margin-top:8px;background:#eef2f8;color:var(--ink);
+    padding:8px 14px;border:1px dashed var(--ink-soft);
+  }
+  .btn-add:hover{background:#e2e9f4}
+
+  .actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
+  .btn-primary{
+    background:var(--ink);color:#fff;padding:11px 18px;flex:1;min-width:130px;
+  }
+  .btn-primary:hover{background:#16294a}
+  .btn-secondary{
+    background:#fff;color:var(--ink);border:1.5px solid var(--ink);
+    padding:11px 18px;flex:1;min-width:130px;
+  }
+  .btn-secondary:hover{background:#eef2f8}
+
+  /* ===== PREVIEW ===== */
+  .preview-wrap{display:flex;flex-direction:column;gap:12px}
+  .preview-hint{font-size:.78rem;color:#667}
+  .paper-holder{overflow-x:auto;padding-bottom:6px}
+
+  /* ===== NOTA (elemen yang diprint / dijadikan PNG) ===== */
+  #nota{
+    width:194mm;min-height:132mm;background:#fff;color:#111;
+    padding:9mm 10mm;font-family:Georgia,"Times New Roman",serif;
+    box-shadow:0 3px 16px rgba(20,30,60,.18);
+    position:relative;font-size:10.5pt;
+  }
+  /* garis sobekan atas ala buku nota */
+  #nota::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:repeating-linear-gradient(90deg,var(--ink) 0 6px,transparent 6px 12px);
+    opacity:.35;
+  }
+  .n-head{display:flex;justify-content:space-between;gap:16px;border-bottom:2.5px solid #111;padding-bottom:8px}
+  .n-toko h2{font-size:15pt;letter-spacing:.5px;text-transform:uppercase}
+  .n-toko p{font-size:8.5pt;color:#333;white-space:pre-line}
+  .n-meta{text-align:right;flex-shrink:0}
+  .n-meta .n-title{
+    font-size:16pt;font-weight:700;letter-spacing:.35em;color:var(--ink);
+  }
+  .n-meta p{font-size:9pt;margin-top:2px}
+  .n-kepada{margin:8px 0 6px;font-size:9.5pt}
+  .n-kepada b{border-bottom:1px dotted #555;padding-bottom:1px}
+
+  table.n-items{width:100%;border-collapse:collapse;margin-top:2px}
+  table.n-items th{
+    border:1px solid #111;padding:4px 6px;font-size:8.5pt;
+    text-transform:uppercase;letter-spacing:.06em;background:#f2f4f8;
+  }
+  table.n-items td{border:1px solid #444;padding:4.5px 6px;font-size:9.5pt}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  .ctr{text-align:center}
+  tr.n-total td{border-top:2px solid #111;font-weight:700}
+  .n-terbilang{
+    margin-top:7px;font-size:9pt;font-style:italic;color:#222;
+    border:1px dashed #999;padding:5px 8px;background:#fbfaf5;
+  }
+  .n-foot{
+    display:flex;justify-content:space-between;margin-top:14px;gap:12px;
+  }
+  .n-sign{text-align:center;font-size:9pt;width:42mm}
+  .n-sign .space{height:17mm}
+  .n-sign .line{border-top:1px solid #333;padding-top:2px}
+  .n-note{font-size:8pt;color:#555;align-self:flex-end;max-width:80mm}
+
+  /* ===== GAYA KASUAL (struk toko kelontong / minimarket) ===== */
+  #nota.casual{
+    font-family:"Courier New",ui-monospace,Menlo,monospace;
+    width:100mm;min-height:auto;padding:8mm 7mm;font-size:9.5pt;
+  }
+  #nota.casual::before{display:none}
+  #nota.casual .n-head{
+    flex-direction:column;align-items:center;text-align:center;
+    border-bottom:1.5px dashed #333;gap:2px;padding-bottom:6px;
+  }
+  #nota.casual .n-toko h2{font-size:12pt}
+  #nota.casual .n-toko p{font-size:8pt}
+  #nota.casual .n-meta{text-align:center}
+  #nota.casual .n-meta .n-title{display:none}
+  #nota.casual .n-meta p{display:inline;font-size:8.5pt;margin:0 4px}
+  #nota.casual .n-kepada{display:none}
+  #nota.casual table.n-items th{
+    background:none;border:none;border-bottom:1.5px dashed #333;
+    font-size:8pt;padding:3px 2px;
+  }
+  #nota.casual table.n-items td{
+    border:none;border-bottom:1px dotted #bbb;padding:3.5px 2px;font-size:9pt;
+  }
+  #nota.casual tr.n-total td{border-top:1.5px dashed #333;border-bottom:none}
+  #nota.casual .n-terbilang{display:none}
+  #nota.casual .n-sign{display:none}
+  #nota.casual .n-foot{justify-content:center;margin-top:10px}
+  #nota.casual .n-note{max-width:none;text-align:center;align-self:center}
+
+  .style-pick label{
+    display:flex;align-items:center;font-weight:500;font-size:.85rem;margin:6px 0;
+  }
+  .style-pick input{width:auto;margin-right:8px}
+
+  /* ===== PRINT ===== */
+  @page{size:A5 landscape;margin:7mm}
+  @media print{
+    body{background:#fff}
+    header.app-bar,.panel,.preview-hint{display:none!important}
+    .layout{display:block;padding:0;max-width:none}
+    .paper-holder{overflow:visible;padding:0}
+    #nota{box-shadow:none;width:auto;min-height:auto;padding:2mm 3mm}
+    #nota::before{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="app-bar">
+  <h1>Generator Nota</h1>
+  <span>isi form &rarr; nota jadi &rarr; print / simpan PNG</span>
+</header>
+
+<div class="layout">
+
+  <!-- ================= FORM ================= -->
+  <div class="panel">
+    <fieldset>
+      <legend>Gaya Nota</legend>
+      <div class="style-pick">
+        <label><input type="radio" name="f-style" value="casual" checked> Kasual — struk toko / minimarket</label>
+        <label><input type="radio" name="f-style" value="formal"> Formal — nota rembesan kantor (ttd &amp; terbilang)</label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Kop Toko</legend>
+      <label for="f-toko">Nama toko</label>
+      <input id="f-toko" value="TOKO SUMBER REZEKI" />
+      <label for="f-alamat">Alamat &amp; kontak (boleh beberapa baris)</label>
+      <textarea id="f-alamat" rows="2">Jl. Contoh No. 123, Malang
+Telp/WA: 0812-3456-7890</textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>Info Nota</legend>
+      <div class="row2">
+        <div>
+          <label for="f-nomor">No. nota</label>
+          <input id="f-nomor" placeholder="mis. 001/VII/2026" />
+        </div>
+        <div>
+          <label for="f-tanggal">Tanggal</label>
+          <input id="f-tanggal" type="date" />
+        </div>
+      </div>
+      <label for="f-kepada">Kepada (nama pelanggan / kantor)</label>
+      <input id="f-kepada" placeholder="mis. PT Maju Jaya" />
+    </fieldset>
+
+    <fieldset>
+      <legend>Daftar Barang</legend>
+      <table class="items">
+        <thead>
+          <tr><th>Nama barang</th><th>Qty</th><th>Harga</th><th></th></tr>
+        </thead>
+        <tbody id="item-rows"></tbody>
+      </table>
+      <button type="button" class="btn-add" onclick="addRow()">+ Tambah barang</button>
+      <label for="f-diskon" style="margin-top:12px">Diskon (Rp, kosongkan jika tidak ada)</label>
+      <input id="f-diskon" type="number" min="0" placeholder="0" />
+    </fieldset>
+
+    <fieldset>
+      <legend>Tanda Tangan</legend>
+      <label for="f-ttd">Nama di kolom "Hormat Kami"</label>
+      <input id="f-ttd" placeholder="mis. Irfan" />
+    </fieldset>
+
+    <div class="actions">
+      <button type="button" class="btn-primary" onclick="window.print()">&#128424; Print</button>
+      <button type="button" class="btn-secondary" onclick="downloadPNG()">&#11015; Simpan PNG</button>
+    </div>
+  </div>
+
+  <!-- ================= PREVIEW ================= -->
+  <div class="preview-wrap">
+    <div class="preview-hint">Preview langsung ter-update saat form diisi. Ukuran cetak: A5 landscape (2 nota per A4, tinggal potong).</div>
+    <div class="paper-holder">
+      <div id="nota">
+        <div class="n-head">
+          <div class="n-toko">
+            <h2 id="n-toko"></h2>
+            <p id="n-alamat"></p>
+          </div>
+          <div class="n-meta">
+            <div class="n-title">N O T A</div>
+            <p>No: <span id="n-nomor">-</span></p>
+            <p><span id="n-tanggal"></span></p>
+          </div>
+        </div>
+        <p class="n-kepada">Kepada Yth: <b id="n-kepada">.....................................</b></p>
+        <table class="n-items">
+          <thead>
+            <tr>
+              <th style="width:8mm">No</th>
+              <th>Nama Barang</th>
+              <th style="width:14mm">Qty</th>
+              <th style="width:26mm">Harga</th>
+              <th style="width:28mm">Jumlah</th>
+            </tr>
+          </thead>
+          <tbody id="n-rows"></tbody>
+          <tfoot id="n-foot-rows"></tfoot>
+        </table>
+        <div class="n-terbilang">Terbilang: <span id="n-terbilang">&mdash;</span></div>
+        <div class="n-foot">
+          <div class="n-sign">
+            Penerima,
+            <div class="space"></div>
+            <div class="line">( ......................... )</div>
+          </div>
+          <p class="n-note">Barang yang sudah dibeli tidak dapat ditukar/dikembalikan.<br>Terima kasih atas kepercayaan Anda.</p>
+          <div class="n-sign">
+            Hormat Kami,
+            <div class="space"></div>
+            <div class="line" id="n-ttd">( ......................... )</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ util ============ */
+const rp = n => "Rp " + (n||0).toLocaleString("id-ID");
+const $  = id => document.getElementById(id);
+
+/* ============ terbilang ============ */
+const SATUAN=["","satu","dua","tiga","empat","lima","enam","tujuh","delapan","sembilan","sepuluh","sebelas"];
+function bilang(n){
+  n=Math.floor(n);
+  if(n<12)   return SATUAN[n];
+  if(n<20)   return bilang(n-10)+" belas";
+  if(n<100)  return bilang(Math.floor(n/10))+" puluh "+bilang(n%10);
+  if(n<200)  return "seratus "+bilang(n-100);
+  if(n<1000) return bilang(Math.floor(n/100))+" ratus "+bilang(n%100);
+  if(n<2000) return "seribu "+bilang(n-1000);
+  if(n<1e6)  return bilang(Math.floor(n/1000))+" ribu "+bilang(n%1000);
+  if(n<1e9)  return bilang(Math.floor(n/1e6))+" juta "+bilang(n%1e6);
+  return bilang(Math.floor(n/1e9))+" miliar "+bilang(n%1e9);
+}
+function terbilang(n){
+  if(!n||n<=0) return "\u2014";
+  const t=bilang(n).replace(/\s+/g," ").trim()+" rupiah";
+  return t.charAt(0).toUpperCase()+t.slice(1);
+}
+
+/* ============ baris barang di form ============ */
+function addRow(nama="",qty="",harga=""){
+  const tr=document.createElement("tr");
+  tr.innerHTML=`
+    <td><input class="i-nama" placeholder="nama barang" value="${nama}"></td>
+    <td class="c-qty"><input class="i-qty" type="number" min="0" placeholder="1" value="${qty}"></td>
+    <td class="c-harga"><input class="i-harga" type="number" min="0" placeholder="0" value="${harga}"></td>
+    <td class="c-del"><button type="button" class="btn-del" title="Hapus baris" onclick="this.closest('tr').remove();render()">&times;</button></td>`;
+  tr.querySelectorAll("input").forEach(el=>el.addEventListener("input",render));
+  $("item-rows").appendChild(tr);
+}
+
+/* ============ render preview ============ */
+function render(){
+  $("n-toko").textContent   = $("f-toko").value || "NAMA TOKO";
+  $("n-alamat").textContent = $("f-alamat").value;
+  $("n-nomor").textContent  = $("f-nomor").value || "-";
+  $("n-kepada").textContent = $("f-kepada").value || ".....................................";
+
+  const d=$("f-tanggal").value;
+  $("n-tanggal").textContent = d
+    ? new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})
+    : "";
+
+  const ttd=$("f-ttd").value.trim();
+  $("n-ttd").textContent = ttd ? "( "+ttd+" )" : "( ......................... )";
+
+  /* barang */
+  const body=$("n-rows"); body.innerHTML="";
+  let subtotal=0, no=0;
+  document.querySelectorAll("#item-rows tr").forEach(tr=>{
+    const nama =tr.querySelector(".i-nama").value.trim();
+    const qty  =parseFloat(tr.querySelector(".i-qty").value)||0;
+    const harga=parseFloat(tr.querySelector(".i-harga").value)||0;
+    if(!nama&&!qty&&!harga) return;
+    const jml=qty*harga; subtotal+=jml; no++;
+    body.insertAdjacentHTML("beforeend",
+      `<tr><td class="ctr">${no}</td><td>${nama||"&nbsp;"}</td>
+       <td class="ctr">${qty||""}</td><td class="num">${harga?rp(harga):""}</td>
+       <td class="num">${jml?rp(jml):""}</td></tr>`);
+  });
+  if(no===0)
+    body.innerHTML=`<tr><td class="ctr">1</td><td>&nbsp;</td><td></td><td></td><td></td></tr>`;
+
+  /* total */
+  const diskon=parseFloat($("f-diskon").value)||0;
+  const total=Math.max(subtotal-diskon,0);
+  const foot=$("n-foot-rows"); foot.innerHTML="";
+  if(diskon>0){
+    foot.insertAdjacentHTML("beforeend",
+      `<tr><td colspan="4" class="num">Subtotal</td><td class="num">${rp(subtotal)}</td></tr>
+       <tr><td colspan="4" class="num">Diskon</td><td class="num">&minus; ${rp(diskon)}</td></tr>`);
+  }
+  foot.insertAdjacentHTML("beforeend",
+    `<tr class="n-total"><td colspan="4" class="num">TOTAL</td><td class="num">${rp(total)}</td></tr>`);
+
+  $("n-terbilang").textContent=terbilang(total);
+}
+
+/* ============ download PNG ============ */
+function downloadPNG(){
+  html2canvas($("nota"),{scale:3,backgroundColor:"#ffffff"}).then(cv=>{
+    const a=document.createElement("a");
+    const nm=($("f-nomor").value||"nota").replace(/[^\w\-]+/g,"_");
+    a.download=`nota_${nm}.png`;
+    a.href=cv.toDataURL("image/png");
+    a.click();
+  });
+}
+
+/* ============ toggle gaya ============ */
+document.querySelectorAll("input[name=f-style]").forEach(r=>
+  r.addEventListener("change",e=>{
+    $("nota").classList.toggle("casual", e.target.value==="casual");
+  })
+);
+
+/* ============ init ============ */
+$("nota").classList.add("casual"); // default: gaya kasual
+$("f-tanggal").value=new Date().toLocaleDateString("sv-SE"); // yyyy-mm-dd lokal
+["f-toko","f-alamat","f-nomor","f-tanggal","f-kepada","f-diskon","f-ttd"]
+  .forEach(id=>$(id).addEventListener("input",render));
+addRow(); addRow(); addRow();
+render();
+</script>
+</body>
+</html>
