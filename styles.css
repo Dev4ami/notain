@@ -1,0 +1,233 @@
+/* =========================================================
+   TOKEN WARNA & UKURAN GLOBAL
+   ========================================================= */
+:root{
+  --ink:#1d3557;
+  --ink-soft:#40557d;
+  --paper:#fbfaf7;
+  --bg:#eef0f3;
+  --line:#d7dbe2;
+  --radius:10px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:#22293a;
+  line-height:1.5;
+}
+
+/* =========================================================
+   HEADER APLIKASI
+   ========================================================= */
+header.app-bar{
+  background:var(--ink);
+  color:#fff;
+  padding:14px 20px;
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  flex-wrap:wrap;
+}
+header.app-bar h1{font-size:1.05rem;font-weight:700;letter-spacing:.3px}
+header.app-bar span{font-size:.8rem;opacity:.75}
+
+/* =========================================================
+   LAYOUT UTAMA (form kiri, preview kanan)
+   ========================================================= */
+.layout{
+  display:grid;
+  grid-template-columns:minmax(320px,430px) 1fr;
+  gap:20px;
+  padding:20px;
+  max-width:1280px;
+  margin:0 auto;
+}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+}
+
+/* =========================================================
+   PANEL FORM (kolom kiri)
+   ========================================================= */
+.panel{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+  align-self:start;
+}
+
+fieldset{border:none;margin-bottom:18px}
+
+legend{
+  font-size:.72rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--ink-soft);
+  margin-bottom:8px;
+}
+
+label{display:block;font-size:.8rem;font-weight:600;margin:8px 0 3px}
+
+input,textarea{
+  width:100%;
+  padding:8px 10px;
+  font-size:.9rem;
+  font-family:inherit;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:#fdfdfd;
+}
+input:focus,textarea:focus{
+  outline:2px solid var(--ink-soft);
+  outline-offset:0;
+  border-color:transparent;
+}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Tabel input barang di form */
+table.items{width:100%;border-collapse:collapse;margin-top:6px}
+table.items th{
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--ink-soft);
+  text-align:left;
+  padding:4px 4px;
+}
+table.items td{padding:3px 3px;vertical-align:middle}
+table.items input{padding:7px 8px;font-size:.85rem}
+td.c-qty{width:64px}
+td.c-harga{width:110px}
+td.c-del{width:34px;text-align:center}
+
+/* =========================================================
+   TOMBOL
+   ========================================================= */
+button{
+  font-family:inherit;
+  cursor:pointer;
+  border:none;
+  border-radius:6px;
+  font-size:.85rem;
+  font-weight:600;
+}
+
+.btn-del{
+  background:transparent;
+  color:#a33;
+  font-size:1rem;
+  width:28px;height:28px;
+  border-radius:50%;
+  line-height:1;
+}
+.btn-del:hover{background:#fbe9e9}
+
+.btn-add{
+  margin-top:8px;
+  background:#eef2f8;
+  color:var(--ink);
+  padding:8px 14px;
+  border:1px dashed var(--ink-soft);
+}
+.btn-add:hover{background:#e2e9f4}
+
+.actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
+
+.btn-primary{
+  background:var(--ink);
+  color:#fff;
+  padding:11px 18px;
+  flex:1;
+  min-width:130px;
+}
+.btn-primary:hover{background:#16294a}
+
+.btn-secondary{
+  background:#fff;
+  color:var(--ink);
+  border:1.5px solid var(--ink);
+  padding:11px 18px;
+  flex:1;
+  min-width:130px;
+}
+.btn-secondary:hover{background:#eef2f8}
+
+/* =========================================================
+   PREVIEW (kolom kanan)
+   ========================================================= */
+.preview-wrap{display:flex;flex-direction:column;gap:12px}
+.preview-hint{font-size:.78rem;color:#667}
+.paper-holder{overflow-x:auto;padding-bottom:6px}
+
+/* =========================================================
+   NOTA / STRUK — elemen yang di-print / disimpan sebagai PNG
+   Gaya: struk toko kelontong / minimarket (font monospace)
+   ========================================================= */
+#nota{
+  background:#fff;
+  color:#111;
+  font-family:"Courier New",ui-monospace,Menlo,monospace;
+  width:100mm;
+  padding:8mm 7mm;
+  font-size:9.5pt;
+  box-shadow:0 3px 16px rgba(20,30,60,.18);
+  position:relative;
+}
+
+/* Kop nota */
+.n-head{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  border-bottom:1.5px dashed #333;
+  gap:2px;
+  padding-bottom:6px;
+}
+.n-toko h2{font-size:12pt;letter-spacing:.5px;text-transform:uppercase}
+.n-toko p{font-size:8pt;color:#333;white-space:pre-line}
+.n-meta{text-align:center}
+.n-meta p{display:inline;font-size:8.5pt;margin:0 4px}
+
+/* Tabel item pada nota */
+table.n-items{width:100%;border-collapse:collapse;margin-top:2px}
+table.n-items th{
+  border:none;
+  border-bottom:1.5px dashed #333;
+  font-size:8pt;
+  padding:3px 2px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+table.n-items td{
+  border:none;
+  border-bottom:1px dotted #bbb;
+  padding:3.5px 2px;
+  font-size:9pt;
+}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.ctr{text-align:center}
+tr.n-total td{border-top:1.5px dashed #333;font-weight:700}
+
+/* Footer nota */
+.n-foot{display:flex;justify-content:center;margin-top:10px}
+.n-note{font-size:8pt;color:#555;text-align:center}
+
+/* =========================================================
+   PRINT — sembunyikan UI aplikasi, hanya cetak nota
+   ========================================================= */
+@page{size:A5 landscape;margin:7mm}
+
+@media print{
+  body{background:#fff}
+  header.app-bar,.panel,.preview-hint{display:none!important}
+  .layout{display:block;padding:0;max-width:none}
+  .paper-holder{overflow:visible;padding:0}
+  #nota{box-shadow:none;width:auto;padding:2mm 3mm}
+}
