@@ -159,6 +159,37 @@ function downloadPNG() {
 }
 
 /* =========================================================
+ * PRINT — bangun 2 salinan nota per lembar A4 (tinggal potong)
+ * ========================================================= */
+
+// Sebelum dialog cetak muncul, isi #print-area dengan 2 klon nota.
+// Klon mewarisi class tema (theme-*) + .nota-print untuk gaya dasar.
+function buildPrintCopies() {
+  const area = $("print-area");
+  area.innerHTML = "";
+  const nota = $("nota");
+
+  for (let i = 0; i < 2; i++) {
+    const copy = nota.cloneNode(true);
+    copy.removeAttribute("id");          // hindari id ganda
+    copy.classList.add("nota-print");
+
+    const slot = document.createElement("div");
+    slot.className = "nota-slot";
+    slot.appendChild(copy);
+    area.appendChild(slot);
+  }
+}
+
+// Kosongkan lagi setelah cetak agar DOM tetap bersih.
+function clearPrintCopies() {
+  $("print-area").innerHTML = "";
+}
+
+window.addEventListener("beforeprint", buildPrintCopies);
+window.addEventListener("afterprint", clearPrintCopies);
+
+/* =========================================================
  * INIT — jalankan sekali saat halaman siap
  * ========================================================= */
 

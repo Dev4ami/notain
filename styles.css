@@ -214,7 +214,7 @@ button{
 /* =========================================================
    NOTA — dasar bersama semua tema
    ========================================================= */
-#nota{
+#nota,.nota-print{
   background:#fff;
   color:#111;
   width:100mm;
@@ -325,14 +325,28 @@ table.n-items{width:100%;border-collapse:collapse;margin-top:2px}
 .theme-minimal .n-note{color:#999}
 
 /* =========================================================
-   PRINT — sembunyikan UI aplikasi, hanya cetak nota
+   AREA CETAK — 2 salinan nota per lembar A4 (tinggal potong)
    ========================================================= */
-@page{size:A5 landscape;margin:7mm}
+#print-area{display:none}
+
+.nota-slot{
+  height:148.5mm;              /* setengah A4 portrait */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  page-break-inside:avoid;
+}
+.nota-slot:first-child{border-bottom:1px dashed #999}  /* garis potong */
+.nota-print{box-shadow:none}
+
+/* =========================================================
+   PRINT — sembunyikan UI aplikasi & preview, cetak 2 salinan
+   ========================================================= */
+@page{size:A4 portrait;margin:0}
 
 @media print{
   body{background:#fff}
-  header.app-bar,.panel,.preview-hint{display:none!important}
+  header.app-bar,.panel,.preview-hint,.paper-holder{display:none!important}
   .layout{display:block;padding:0;max-width:none}
-  .paper-holder{overflow:visible;padding:0}
-  #nota{box-shadow:none;width:auto;padding:2mm 3mm}
+  #print-area{display:block}
 }
