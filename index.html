@@ -11,6 +11,7 @@
 
 <header class="app-bar">
   <h1>NOTAIN</h1>
+  <button type="button" id="btn-dark" title="Mode gelap/terang">&#9789;</button>
 </header>
 
 <div class="layout">
@@ -38,6 +39,12 @@ Telp/WA: 0812-3456-7890</textarea>
           <input id="f-tanggal" type="date">
         </div>
       </div>
+      <label for="f-tema">Gaya nota</label>
+      <select id="f-tema">
+        <option value="theme-struk">Struk (monospace)</option>
+        <option value="theme-formal">Formal (tabel bergaris)</option>
+        <option value="theme-minimal">Minimalis</option>
+      </select>
     </fieldset>
 
     <fieldset>
@@ -63,7 +70,7 @@ Telp/WA: 0812-3456-7890</textarea>
   <div class="preview-wrap">
     <div class="preview-hint">Preview langsung ter-update saat form diisi. Ukuran cetak: A5 landscape (2 nota per A4, tinggal potong).</div>
     <div class="paper-holder">
-      <div id="nota">
+      <div id="nota" class="theme-struk">
         <div class="n-head">
           <div class="n-toko">
             <h2 id="n-toko"></h2>

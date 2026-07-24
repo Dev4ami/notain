@@ -8,6 +8,21 @@
   --bg:#eef0f3;
   --line:#d7dbe2;
   --radius:10px;
+  --panel:#fff;
+  --field:#fdfdfd;
+  --text:#22293a;
+  --hint:#667;
+}
+
+body.dark{
+  --ink:#31456e;
+  --ink-soft:#8fa3c9;
+  --bg:#14171c;
+  --line:#3a4150;
+  --panel:#1e232b;
+  --field:#262c36;
+  --text:#d5dae3;
+  --hint:#8a93a3;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -15,7 +30,7 @@
 body{
   font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   background:var(--bg);
-  color:#22293a;
+  color:var(--text);
   line-height:1.5;
 }
 
@@ -29,7 +44,18 @@ header.app-bar{
   display:flex;
   justify-content:center;
   align-items:center;
+  position:relative;
 }
+#btn-dark{
+  position:absolute;
+  right:16px;
+  background:transparent;
+  color:#fff;
+  font-size:1.2rem;
+  width:36px;height:36px;
+  border-radius:50%;
+}
+#btn-dark:hover{background:rgba(255,255,255,.15)}
 header.app-bar h1{
   font-size:1.15rem;
   font-weight:700;
@@ -67,7 +93,7 @@ header.app-bar h1{
    PANEL FORM (kolom kiri)
    ========================================================= */
 .panel{
-  background:#fff;
+  background:var(--panel);
   border:1px solid var(--line);
   border-radius:var(--radius);
   padding:18px;
@@ -87,16 +113,17 @@ legend{
 
 label{display:block;font-size:.8rem;font-weight:600;margin:8px 0 3px}
 
-input,textarea{
+input,textarea,select{
   width:100%;
   padding:8px 10px;
   font-size:.9rem;
   font-family:inherit;
   border:1px solid var(--line);
   border-radius:6px;
-  background:#fdfdfd;
+  background:var(--field);
+  color:var(--text);
 }
-input:focus,textarea:focus{
+input:focus,textarea:focus,select:focus{
   outline:2px solid var(--ink-soft);
   outline-offset:0;
   border-color:transparent;
@@ -144,12 +171,12 @@ button{
 
 .btn-add{
   margin-top:8px;
-  background:#eef2f8;
-  color:var(--ink);
+  background:var(--field);
+  color:var(--ink-soft);
   padding:8px 14px;
   border:1px dashed var(--ink-soft);
 }
-.btn-add:hover{background:#e2e9f4}
+.btn-add:hover{background:var(--bg)}
 
 .actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
 
@@ -160,23 +187,23 @@ button{
   flex:1;
   min-width:130px;
 }
-.btn-primary:hover{background:#16294a}
+.btn-primary:hover{filter:brightness(1.15)}
 
 .btn-secondary{
-  background:#fff;
-  color:var(--ink);
-  border:1.5px solid var(--ink);
+  background:var(--panel);
+  color:var(--ink-soft);
+  border:1.5px solid var(--ink-soft);
   padding:11px 18px;
   flex:1;
   min-width:130px;
 }
-.btn-secondary:hover{background:#eef2f8}
+.btn-secondary:hover{background:var(--bg)}
 
 /* =========================================================
    PREVIEW (kolom kanan)
    ========================================================= */
 .preview-wrap{display:flex;flex-direction:column;gap:12px}
-.preview-hint{font-size:.78rem;color:#667}
+.preview-hint{font-size:.78rem;color:var(--hint)}
 .paper-holder{
   overflow-x:auto;
   padding-bottom:6px;
@@ -185,22 +212,29 @@ button{
 }
 
 /* =========================================================
-   NOTA / STRUK — elemen yang di-print / disimpan sebagai PNG
-   Gaya: struk toko kelontong / minimarket (font monospace)
+   NOTA — dasar bersama semua tema
    ========================================================= */
 #nota{
   background:#fff;
   color:#111;
-  font-family:"Courier New",ui-monospace,Menlo,monospace;
   width:100mm;
   padding:8mm 7mm;
   font-size:9.5pt;
   box-shadow:0 3px 16px rgba(20,30,60,.18);
   position:relative;
 }
+.n-toko p{white-space:pre-line}
+table.n-items{width:100%;border-collapse:collapse;margin-top:2px}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.ctr{text-align:center}
+.n-foot{display:flex;justify-content:center;margin-top:10px}
+.n-note{font-size:8pt;color:#555;text-align:center}
 
-/* Kop nota */
-.n-head{
+/* =========================================================
+   TEMA: STRUK — toko kelontong / minimarket (monospace)
+   ========================================================= */
+.theme-struk{font-family:"Courier New",ui-monospace,Menlo,monospace}
+.theme-struk .n-head{
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -209,34 +243,86 @@ button{
   gap:2px;
   padding-bottom:6px;
 }
-.n-toko h2{font-size:12pt;letter-spacing:.5px;text-transform:uppercase}
-.n-toko p{font-size:8pt;color:#333;white-space:pre-line}
-.n-meta{text-align:center}
-.n-meta p{display:inline;font-size:8.5pt;margin:0 4px}
-
-/* Tabel item pada nota */
-table.n-items{width:100%;border-collapse:collapse;margin-top:2px}
-table.n-items th{
-  border:none;
+.theme-struk .n-toko h2{font-size:12pt;letter-spacing:.5px;text-transform:uppercase}
+.theme-struk .n-toko p{font-size:8pt;color:#333}
+.theme-struk .n-meta{text-align:center}
+.theme-struk .n-meta p{display:inline;font-size:8.5pt;margin:0 4px}
+.theme-struk table.n-items th{
   border-bottom:1.5px dashed #333;
   font-size:8pt;
   padding:3px 2px;
   text-transform:uppercase;
   letter-spacing:.06em;
 }
-table.n-items td{
-  border:none;
+.theme-struk table.n-items td{
   border-bottom:1px dotted #bbb;
   padding:3.5px 2px;
   font-size:9pt;
 }
-.num{text-align:right;font-variant-numeric:tabular-nums}
-.ctr{text-align:center}
-tr.n-total td{border-top:1.5px dashed #333;font-weight:700}
+.theme-struk tr.n-total td{border-top:1.5px dashed #333;font-weight:700}
 
-/* Footer nota */
-.n-foot{display:flex;justify-content:center;margin-top:10px}
-.n-note{font-size:8pt;color:#555;text-align:center}
+/* =========================================================
+   TEMA: FORMAL — nota resmi, tabel bergaris penuh
+   ========================================================= */
+.theme-formal{font-family:Georgia,"Times New Roman",serif}
+.theme-formal .n-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  border-bottom:2.5px double #111;
+  padding-bottom:6px;
+  gap:8px;
+}
+.theme-formal .n-toko h2{font-size:13pt;letter-spacing:.5px}
+.theme-formal .n-toko p{font-size:8pt;color:#333}
+.theme-formal .n-meta{text-align:right}
+.theme-formal .n-meta p{font-size:8.5pt}
+.theme-formal table.n-items{margin-top:8px}
+.theme-formal table.n-items th{
+  border:1px solid #111;
+  background:#f0f0f0;
+  font-size:8pt;
+  padding:4px 4px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.theme-formal table.n-items td{
+  border:1px solid #444;
+  padding:4px 4px;
+  font-size:9pt;
+}
+.theme-formal tr.n-total td{background:#f0f0f0;font-weight:700}
+
+/* =========================================================
+   TEMA: MINIMALIS — bersih, sans-serif, garis tipis
+   ========================================================= */
+.theme-minimal{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.theme-minimal .n-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding-bottom:10px;
+  gap:8px;
+}
+.theme-minimal .n-toko h2{font-size:12pt;font-weight:600;letter-spacing:.02em}
+.theme-minimal .n-toko p{font-size:8pt;color:#777}
+.theme-minimal .n-meta{text-align:right}
+.theme-minimal .n-meta p{font-size:8.5pt;color:#555}
+.theme-minimal table.n-items th{
+  border-bottom:1px solid #111;
+  font-size:7.5pt;
+  padding:4px 2px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:#555;
+}
+.theme-minimal table.n-items td{
+  border-bottom:1px solid #eee;
+  padding:5px 2px;
+  font-size:9pt;
+}
+.theme-minimal tr.n-total td{border-top:1px solid #111;font-weight:700}
+.theme-minimal .n-note{color:#999}
 
 /* =========================================================
    PRINT — sembunyikan UI aplikasi, hanya cetak nota

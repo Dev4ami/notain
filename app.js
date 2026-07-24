@@ -169,6 +169,32 @@ $("f-tanggal").value = new Date().toLocaleDateString("sv-SE");
 ["f-toko", "f-alamat", "f-nomor", "f-tanggal", "f-diskon"]
   .forEach(id => $(id).addEventListener("input", render));
 
+// Ganti tema nota
+$("f-tema").addEventListener("change", () => {
+  $("nota").className = $("f-tema").value;
+});
+
+/* =========================================================
+ * MODE GELAP — hanya UI aplikasi; nota tetap putih
+ * ========================================================= */
+
+function setDark(on) {
+  document.body.classList.toggle("dark", on);
+  $("btn-dark").innerHTML = on ? "&#9788;" : "&#9789;";
+  localStorage.setItem("notain-dark", on ? "1" : "0");
+}
+
+$("btn-dark").addEventListener("click", () =>
+  setDark(!document.body.classList.contains("dark"))
+);
+
+// Preferensi tersimpan; kalau belum ada ikut preferensi OS
+setDark(
+  localStorage.getItem("notain-dark") !== null
+    ? localStorage.getItem("notain-dark") === "1"
+    : matchMedia("(prefers-color-scheme: dark)").matches
+);
+
 // Tombol-tombol
 $("btn-add-row").addEventListener("click", () => addRow());
 $("btn-print").addEventListener("click", () => window.print());
