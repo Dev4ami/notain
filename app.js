@@ -17,6 +17,13 @@ const rp = n => "Rp " + (n || 0).toLocaleString("id-ID");
 // Shortcut document.getElementById
 const $ = id => document.getElementById(id);
 
+// Escape teks user sebelum masuk ke HTML (cegah markup rusak/injeksi)
+const esc = s => String(s)
+  .replaceAll("&", "&amp;")
+  .replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;")
+  .replaceAll('"', "&quot;");
+
 /* =========================================================
  * FORM — baris input barang
  * ========================================================= */
@@ -29,9 +36,9 @@ const $ = id => document.getElementById(id);
 function addRow(nama = "", qty = "", harga = "") {
   const tr = document.createElement("tr");
   tr.innerHTML = `
-    <td><input class="i-nama" placeholder="nama barang" value="${nama}"></td>
-    <td class="c-qty"><input class="i-qty" type="number" min="0" placeholder="1" value="${qty}"></td>
-    <td class="c-harga"><input class="i-harga" type="number" min="0" placeholder="0" value="${harga}"></td>
+    <td><input class="i-nama" placeholder="nama barang" value="${esc(nama)}"></td>
+    <td class="c-qty"><input class="i-qty" type="number" min="0" placeholder="1" value="${esc(qty)}"></td>
+    <td class="c-harga"><input class="i-harga" type="number" min="0" placeholder="0" value="${esc(harga)}"></td>
     <td class="c-del"><button type="button" class="btn-del" title="Hapus baris">&times;</button></td>
   `;
 
@@ -94,7 +101,7 @@ function renderItems() {
     body.insertAdjacentHTML("beforeend", `
       <tr>
         <td class="ctr">${no}</td>
-        <td>${nama || "&nbsp;"}</td>
+        <td>${nama ? esc(nama) : "&nbsp;"}</td>
         <td class="ctr">${qty || ""}</td>
         <td class="num">${harga ? rp(harga) : ""}</td>
         <td class="num">${jml   ? rp(jml)   : ""}</td>
@@ -136,12 +143,18 @@ function renderTotal(subtotal) {
  * ========================================================= */
 
 function downloadPNG() {
+  if (typeof html2canvas !== "function") {
+    alert("Gagal menyimpan PNG: html2canvas tidak termuat. Muat ulang halaman.");
+    return;
+  }
   html2canvas($("nota"), { scale: 3, backgroundColor: "#ffffff" }).then(cv => {
     const nm = ($("f-nomor").value || "nota").replace(/[^\w\-]+/g, "_");
     const a  = document.createElement("a");
     a.download = `nota_${nm}.png`;
     a.href     = cv.toDataURL("image/png");
     a.click();
+  }).catch(err => {
+    alert("Gagal menyimpan PNG: " + err.message);
   });
 }
 
